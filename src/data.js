@@ -98,6 +98,11 @@ export function loadData(dir) {
 // Escape one value for writing back to a CSV file.
 export function csvEscape(value) {
   const s = String(value ?? '');
-  if (/[",\n]/.test(s)) return '"' + s.replace(/"/g, '""') + '"';
-  return s;
+  // Spreadsheet formula injection: a field starting with =, +, -, @,
+  // tab, or CR can execute as a formula when the CSV is opened in a
+  // spreadsheet app. Prefixing with a single quote neutralises it
+  // while keeping the value readable.
+  const body = /^[=+\-@\t\r]/.test(s) ? "'" + s : s;
+  if (/[",\n]/.test(body)) return '"' + body.replace(/"/g, '""') + '"';
+  return body;
 }

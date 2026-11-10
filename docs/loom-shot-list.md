@@ -20,7 +20,7 @@ Type: "I want to order 2 Kampot black pepper." Show it asking for a name, then t
 
 ## Shot 5 (70-90s): the close
 
-Show the test run in the terminal (`npm test`, PASS 90/90). Say: "Ninety test questions, all passing, English and Khmer. The code, the sheets, and the test list are all in the repo link below. Happy to walk through the milestones and monthly costs on a call."
+Show the test run in the terminal (`npm test`, PASS 94/94 and SMOKE PASS). Say: "Ninety-four test questions, all passing, English and Khmer. The code, the sheets, and the test list are all in the repo link below. Happy to walk through the milestones and monthly costs on a call."
 
 ## Before recording
 
@@ -28,3 +28,4 @@ Show the test run in the terminal (`npm test`, PASS 90/90). Say: "Ninety test qu
 - Clear the enquiries log first (it should have header only) so the staff view starts empty.
 - Use a fresh browser session so no old chat is on screen.
 - Keep the terminal visible for the final shot.
+- The staff-view portion of shot 4 is the local dev version; the public Netlify link is customer-chat-only by design (see `docs/security-review.md`).

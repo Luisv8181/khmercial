@@ -14,7 +14,9 @@ What the demo shows, in about 90 seconds on video (link to Loom to be added):
 - Prices and stock come straight from a sheet the shop owner edits. The bot copies them word for word and never guesses. An out-of-stock product gets an honest out-of-stock reply.
 - Orders are logged with name, phone, and product for your team to follow up.
 - An upset customer, a refund request, or a question the sheet cannot answer hands over to a human, and the bot pauses until your team resumes it.
-- 90 test questions (English and Khmer) all pass, and the test list is in the repo.
+- 94 test questions (English and Khmer, plus adversarial prompts) all pass, and the test list is in the repo.
+
+The public link is the customer chat; the video also shows the staff view, where orders land for your team.
 
 The demo uses a fictional shop and sample data. The Khmer lines are samples, and your native speaker would approve the real wording before launch. That is a condition I would hold to in the real build.
 
@@ -37,5 +39,6 @@ Luis Vasquez
 Notes for Luis (not sent to the client):
 - Add the Loom video link before sending.
 - Check the job listing is still open and the client is payment verified before spending Connects.
+- The public demo link is the customer chat only, by design (see docs/security-review.md); the video shows the staff view. Do not promise a public staff login.
 - The milestone prices are Claude's structure from the feasibility review ($800 / $400 / $500 / $300 voice optional was Claude's split; the $250 / $500 / $650 / $600 split above is ChatGPT's). Pick one structure before sending and keep it consistent.
 - Do not claim a deployed chatbot or a team of human developers anywhere in the proposal.

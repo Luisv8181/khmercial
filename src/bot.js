@@ -430,6 +430,10 @@ export function createBot({ products = [], faqs = [], handover = [], apiKey = nu
   // Per-session state, kept in memory only.
   // sessions: sessionId -> { paused, pausedReply, pausedReason, pendingEnquiry }
   const sessions = new Map();
+  // Bound the session table: a flood of new session ids must not grow
+  // memory without limit. Sessions are in-memory only and lost on
+  // restart.
+  const MAX_SESSIONS = 500;
 
   // Enrich the known-words set with the vocabulary from the sheets.
   for (const p of products) {
@@ -447,6 +451,11 @@ export function createBot({ products = [], faqs = [], handover = [], apiKey = nu
 
   function getSession(sessionId) {
     if (!sessions.has(sessionId)) {
+      // Drop the oldest session when the table is full.
+      if (sessions.size >= MAX_SESSIONS) {
+        const oldest = sessions.keys().next().value;
+        if (oldest !== undefined) sessions.delete(oldest);
+      }
       sessions.set(sessionId, {
         paused: false,
         pausedReply: null,
@@ -587,7 +596,7 @@ export function createBot({ products = [], faqs = [], handover = [], apiKey = nu
     });
   }
 
-  async function handleMessage({ sessionId = 'default', text = '' } = {}) {
+  async function handleMessageInner({ sessionId = 'default', text = '' } = {}) {
     const message = String(text ?? '');
     const language = detectLanguage(message);
     const session = getSession(sessionId);
@@ -881,6 +890,23 @@ export function createBot({ products = [], faqs = [], handover = [], apiKey = nu
       source: 'fallback',
       matchedId: null,
     });
+  }
+
+  // Serialize work per session: two messages for the same session can
+  // otherwise interleave while one awaits the AI rerank, and the second
+  // can read or overwrite the first one's pending-enquiry state. A
+  // per-session promise chain makes each message run to completion
+  // before the next one for that session starts. Different sessions
+  // still run in parallel.
+  const queues = new Map();
+  async function handleMessage(args) {
+    const sessionId = String((args && args.sessionId) || 'default');
+    const prev = queues.get(sessionId) || Promise.resolve();
+    const run = prev.then(() => handleMessageInner(args));
+    // Store a non-rejecting promise so one failure cannot stall the
+    // queue for the session; the caller still sees the real result.
+    queues.set(sessionId, run.catch(() => {}));
+    return run;
   }
 
   function resumeSession(sessionId) {

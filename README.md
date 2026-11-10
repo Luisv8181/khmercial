@@ -14,13 +14,17 @@ This is a demonstration. The shop is fictional, all data is synthetic, and the K
 npm start
 ```
 
-Open http://localhost:3000. No API key needed. The demo runs fully on its own deterministic logic.
+Open http://localhost:3000. No API key needed. The demo runs fully on its own deterministic logic. The server binds localhost by default; set `HOST=0.0.0.0` only on a trusted local network, and only for the demo.
 
 Run the tests:
 
 ```bash
 npm test
 ```
+
+## Security
+
+The Node server is a local demo server only: it binds `127.0.0.1` by default, and `GET /api/enquiries` is loopback-only by code. Do not expose it to the internet. The public deployment is the static build (Netlify): customer chat only, no server, no enquiry endpoint, nothing stored. Full review, including the independent ChatGPT review and the reconciliation: `docs/security-review.md`.
 
 ## How it works
 
@@ -29,7 +33,7 @@ npm test
 - `src/data.js` loads the CSV files in `data/`. In production these four files are the four Google Sheets tabs (Products, FAQs, Handover rules, Enquiries log). See `docs/sheets-and-manychat.md`.
 - `src/ai.js` is the optional AI layer. With no key it returns null and the demo behaves identically. With a `GEMINI_API_KEY` in `.env` it only reranks candidate answers. It never writes reply text and never sees prices.
 - `public/index.html` is the chat UI with a staff view (enquiries table, pause/resume).
-- `tests/cases.json` is the 90-case test set (30 English, 30 Khmer, 10 ambiguous, 10 missing-info, 10 escalation). `tests/run.js` runs it.
+- `tests/cases.json` is the 94-case test set (30 English, 30 Khmer, 10 ambiguous, 10 missing-info, 10 escalation, 4 adversarial). `tests/run.js` runs it. `tests/server-smoke.mjs` is the HTTP security suite (headers, traversal, rate limiting, XSS, input caps) and runs as part of `npm test`.
 
 ## API
 
