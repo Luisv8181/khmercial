@@ -1,0 +1,18 @@
+# Netlify deployment for the public static demo (customer chat only).
+# The build script emits a self-contained static site into static/:
+# no server, no staff view, no enquiry storage of any kind.
+[build]
+  command = "node scripts/build-static.mjs"
+  publish = "static"
+
+# Same security headers the Node demo server sends (see server.mjs).
+# No preload on HSTS: do not commit the domain to the preload list.
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Content-Security-Policy = "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; frame-ancestors 'none'; object-src 'none'; base-uri 'self'; form-action 'self'"
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "no-referrer"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=(), payment=()"
+    Strict-Transport-Security = "max-age=31536000; includeSubDomains"

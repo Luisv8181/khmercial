@@ -25,6 +25,10 @@ Customer (Facebook / Instagram)
 6. Enquiry intent (order, buy, want, book) starts a staged flow: ask for the name, then the phone number, then confirm and log the enquiry.
 7. Anything else gets a clarification question or the fallback line, and the bot does not pretend to know.
 
+## Static mode (public demo)
+
+The public deployment is a static build, not the Node server: `scripts/build-static.mjs` bundles the bot and the sheet data into `static/` for Netlify, and the page runs the bot in the visitor's browser. It is customer-chat-only by decision, not by omission: there is no staff view, no enquiry endpoint, and no storage of any kind, so the public link collects and stores nothing. The enquiry flow still completes in the chat (name, phone, confirmation) and then ends there. The full app with the staff view and the enquiry log lives only in the local Node version.
+
 ## Session state
 
 Sessions live in memory on the server. A paused session stays paused: every later message returns the handover reply until staff resumes it with `POST /api/handover/resume`. Restarting the server clears sessions and the in-memory enquiry list. The CSV log on disk persists.

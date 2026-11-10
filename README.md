@@ -22,6 +22,32 @@ Run the tests:
 npm test
 ```
 
+## Static build (Netlify)
+
+The public deployment is a static site, customer chat only: no staff view, no server, no enquiry storage of any kind (no localStorage, no sessionStorage, no `/api/*` calls). The enquiry flow still runs in the chat: the bot asks for name and phone and shows the confirmation, and that is the end of it in the public build. Nothing is stored; the page says so. The full app with the staff view stays in the local Node version above.
+
+Build it locally:
+
+```bash
+node scripts/build-static.mjs
+```
+
+That emits a self-contained site into `static/` (not committed; it is in `.gitignore` and built by Netlify on deploy):
+
+- `index.html` — `public/index.html` minus the staff view, plus a line stating the public demo stores nothing.
+- `app.js` — `public/app.js` as an ES module, with the transport layer replaced by direct calls to the bundled bot (`bot.handleMessage`, `bot.resumeSession`); enquiry recording is a no-op.
+- `bot.js`, `ai.js` — verbatim copies of `src/bot.js` and `src/ai.js`. With no key, `aiAssist` returns null, so the bot behaves identically.
+- `data.js` — generated from `data/products.csv`, `data/faqs.csv`, and `data/handover.csv`. `src/data.js` is not copied (it uses Node `fs` and cannot run in a browser). No enquiries data is included.
+- `styles.css` — verbatim copy of `public/styles.css`.
+
+No source maps, no API key in the output. Serve the output locally to check it:
+
+```bash
+cd static && python3 -m http.server 8000
+```
+
+`netlify.toml` sets the build command (`node scripts/build-static.mjs`) and the publish directory (`static`), plus the same security headers the Node server sends. Suggested site name: `sokha-mart-demo`.
+
 ## Security
 
 The Node server is a local demo server only: it binds `127.0.0.1` by default, and `GET /api/enquiries` is loopback-only by code. Do not expose it to the internet. The public deployment is the static build (Netlify): customer chat only, no server, no enquiry endpoint, nothing stored. Full review, including the independent ChatGPT review and the reconciliation: `docs/security-review.md`.

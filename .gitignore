@@ -1,3 +1,5 @@
 .env
 node_modules
 *.log
+# Generated static build output (built by Netlify on deploy, not committed)
+static/
