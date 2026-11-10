@@ -1,0 +1,11 @@
+# SAMPLE Khmer text, pending native-speaker review, do not present as verified Khmer
+# Currency note: 4,000 KHR = $1 is an approximation, not a live exchange rate.
+id,name_en,name_kh,price_usd,price_khr,stock,category,notes
+P01,Kampot black pepper 100g,ម្រេចកំពត,6.50,26000,25,Spices,Whole black peppercorns from Kampot
+P02,Palm sugar 500g,ស្ករត្នោត,3.00,12000,40,Pantry,Natural palm sugar block
+P03,Dried mango 200g,ស្វាយក្រៀម,4.50,18000,0,Snacks,Sweet dried mango slices
+P04,Silk scarf,កន្សែងសូត្រ,12.00,48000,12,Textiles,Handwoven silk scarf
+P05,Coconut oil 250ml,ប្រេងដូង,5.00,20000,18,Pantry,Cold pressed coconut oil
+P06,Cambodian coffee 250g,កាហ្វេខ្មែរ,8.00,32000,2,Beverages,Ground Cambodian coffee beans
+P07,Rice noodles 1kg,មីអង្ករ,2.50,10000,60,Pantry,Dried rice noodles
+P08,Woven basket,កន្ត្រក,9.00,36000,8,Home,Handwoven storage basket

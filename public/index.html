@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<!-- UI pattern inspired by a chat demo layout (message bubbles, top bar, handover banner). All text and data here are fictional. -->
+<!-- Khmer chrome strings below are demonstration samples only, pending native-speaker review. They translate page labels, not bot replies. -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sokha Mart - Demo Chat</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: #f2f5f4;
+    color: #1c2b28;
+  }
+  .demo-banner {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: #0f766e;
+    color: #ffffff;
+    padding: 10px 12px;
+    font-size: 13px;
+    line-height: 1.4;
+  }
+  .demo-banner-inner {
+    max-width: 480px;
+    margin: 0 auto;
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+    justify-content: space-between;
+  }
+  .demo-banner p { margin: 0; flex: 1; }
+  .banner-buttons { display: flex; gap: 6px; flex-shrink: 0; }
+  .btn {
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    border: 1px solid transparent;
+    border-radius: 999px;
+    padding: 7px 12px;
+    cursor: pointer;
+    background: #ffffff;
+    color: #0f766e;
+  }
+  .btn-secondary {
+    background: transparent;
+    color: #ffffff;
+    border-color: rgba(255, 255, 255, 0.7);
+  }
+  .btn:disabled { opacity: 0.55; cursor: not-allowed; }
+  .wrap {
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 16px 12px 32px;
+  }
+  .phone {
+    background: #ffffff;
+    border: 1px solid #dbe5e2;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 4px 18px rgba(15, 118, 110, 0.10);
+  }
+  .chat-header {
+    background: #0f766e;
+    color: #ffffff;
+    padding: 14px 16px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+  .avatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: #ffffff;
+    color: #0f766e;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 17px;
+    flex-shrink: 0;
+  }
+  .chat-header h1 { font-size: 17px; margin: 0; line-height: 1.2; }
+  .chat-header .sub {
+    font-size: 12px;
+    opacity: 0.92;
+    margin: 2px 0 0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .online-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #4ade80;
+    display: inline-block;
+  }
+  .messages {
+    height: 420px;
+    overflow-y: auto;
+    padding: 16px 12px;
+    background: #f8faf9;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .msg { max-width: 82%; display: flex; flex-direction: column; }
+  .msg.user { align-self: flex-end; align-items: flex-end; }
+  .msg.bot { align-self: flex-start; align-items: flex-start; }
+  .bubble {
+    padding: 10px 13px;
+    border-radius: 16px;
+    font-size: 15px;
+    line-height: 1.45;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+  }
+  .msg.user .bubble {
+    background: #0f766e;
+    color: #ffffff;
+    border-bottom-right-radius: 5px;
+  }
+  .msg.bot .bubble {
+    background: #ffffff;
+    color: #1c2b28;
+    border: 1px solid #dbe5e2;
+    border-bottom-left-radius: 5px;
+  }
+  .meta {
+    margin-top: 4px;
+    font-size: 11px;
+    color: #5b6b67;
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .badge, .chip {
+    display: inline-block;
+    padding: 2px 7px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 1.4;
+  }
+  .badge { background: #ccfbf1; color: #0f766e; border: 1px solid #99f6e4; }
+  .chip { background: #eef2f1; color: #33413e; border: 1px solid #dbe5e2; font-weight: 600; }
+  .conf { font-weight: 600; }
+  .handover-banner {
+    display: none;
+    background: #fef3c7;
+    border-bottom: 1px solid #fcd34d;
+    color: #78350f;
+    padding: 12px 16px;
+    font-size: 14px;
+    line-height: 1.45;
+  }
+  .handover-banner.show { display: block; }
+  .error-box {
+    display: none;
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    color: #991b1b;
+    border-radius: 10px;
+    padding: 10px 12px;
+    margin: 10px 12px 0;
+    font-size: 13px;
+    line-height: 1.45;
+  }
+  .error-box.show { display: block; }
+  .quick-replies {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    padding: 12px 12px 0;
+    background: #ffffff;
+  }
+  .quick-replies button {
+    font-family: inherit;
+    font-size: 13px;
+    padding: 7px 11px;
+    border-radius: 999px;
+    border: 1px solid #0f766e;
+    background: #ffffff;
+    color: #0f766e;
+    cursor: pointer;
+  }
+  .quick-replies button:disabled { opacity: 0.5; cursor: not-allowed; }
+  .composer {
+    display: flex;
+    gap: 8px;
+    padding: 12px;
+    background: #ffffff;
+  }
+  .composer input {
+    flex: 1;
+    font-family: inherit;
+    font-size: 15px;
+    padding: 11px 13px;
+    border: 1px solid #cbd5d1;
+    border-radius: 999px;
+    outline: none;
+    min-width: 0;
+  }
+  .composer input:focus { border-color: #0f766e; }
+  .composer input:disabled { background: #f1f5f4; }
+  .send-btn {
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 700;
+    padding: 11px 16px;
+    border-radius: 999px;
+    border: none;
+    background: #0f766e;
+    color: #ffffff;
+    cursor: pointer;
+  }
+  .send-btn:disabled { opacity: 0.55; cursor: not-allowed; }
+  .resume-row {
+    display: none;
+    padding: 0 12px 14px;
+    background: #ffffff;
+  }
+  .resume-row.show { display: block; }
+  .resume-row button {
+    width: 100%;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 700;
+    padding: 11px;
+    border-radius: 10px;
+    border: 1px solid #0f766e;
+    background: #ecfdf5;
+    color: #0f766e;
+    cursor: pointer;
+  }
+  .note {
+    font-size: 12px;
+    color: #5b6b67;
+    line-height: 1.5;
+    margin: 12px 4px 0;
+  }
+  .staff {
+    background: #ffffff;
+    border: 1px solid #dbe5e2;
+    border-radius: 16px;
+    padding: 16px;
+  }
+  .staff h2 { font-size: 18px; margin: 0 0 10px; }
+  .staff p { font-size: 14px; line-height: 1.5; margin: 6px 0; }
+  .staff-actions { display: flex; gap: 8px; flex-wrap: wrap; margin: 12px 0; }
+  .staff-actions .btn { border-color: #0f766e; }
+  .staff-actions .btn-secondary { color: #0f766e; border-color: #0f766e; background: #ffffff; }
+  .state-pill {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 700;
+    background: #dcfce7;
+    color: #166534;
+  }
+  .state-pill.paused { background: #fef3c7; color: #92400e; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    margin-top: 10px;
+  }
+  th, td {
+    text-align: left;
+    padding: 8px 6px;
+    border-bottom: 1px solid #e5ecea;
+    vertical-align: top;
+    word-wrap: break-word;
+  }
+  th { color: #5b6b67; font-size: 12px; }
+  .table-wrap { overflow-x: auto; }
+  .muted { color: #5b6b67; font-size: 13px; }
+  [hidden] { display: none !important; }
+</style>
+</head>
+<body>
+
+<div class="demo-banner">
+  <div class="demo-banner-inner">
+    <p data-i18n="banner">DEMONSTRATION. Fictional shop (Sokha Mart, Phnom Penh). Synthetic data only. Not a real business.</p>
+    <div class="banner-buttons">
+      <button type="button" class="btn btn-secondary" id="langToggle" aria-label="Switch language">KH</button>
+      <button type="button" class="btn" id="viewToggle" data-i18n="staffView">Staff view</button>
+    </div>
+  </div>
+</div>
+
+<main class="wrap">
+
+  <!-- Customer chat view -->
+  <section id="customerView" aria-label="Customer chat">
+    <div class="phone">
+      <div class="chat-header">
+        <div class="avatar" aria-hidden="true">S</div>
+        <div>
+          <h1>Sokha Mart</h1>
+          <p class="sub"><span class="online-dot" aria-hidden="true"></span><span data-i18n="shopSub">Typically replies instantly</span></p>
+        </div>
+      </div>
+
+      <div class="handover-banner" id="handoverBanner" role="status" data-i18n="handover">Handed over to a human. The bot is paused. A team member will reply here.</div>
+
+      <div class="messages" id="messages" aria-live="polite">
+        <div class="msg bot">
+          <div class="bubble">Hello, welcome to Sokha Mart. How can I help you today?</div>
+        </div>
+      </div>
+
+      <div class="error-box" id="errorBox" role="alert">Demo server not running. Start it with: npm start</div>
+
+      <div class="quick-replies" id="quickReplies">
+        <button type="button" data-q="How much is the Kampot pepper?">How much is the Kampot pepper?</button>
+        <button type="button" data-q="Do you deliver in Phnom Penh?">Do you deliver in Phnom Penh?</button>
+        <button type="button" data-q="I want to order">I want to order</button>
+        <button type="button" data-q="I want to talk to a person">I want to talk to a person</button>
+      </div>
+
+      <form class="composer" id="composer">
+        <input type="text" id="chatInput" data-i18n-placeholder="placeholder" placeholder="Type a message..." autocomplete="off" aria-label="Type a message">
+        <button type="submit" class="send-btn" id="sendBtn" data-i18n="send">Send</button>
+      </form>
+
+      <div class="resume-row" id="resumeRow">
+        <button type="button" id="resumeBtnChat" data-i18n="resume">Resume bot (staff)</button>
+      </div>
+    </div>
+
+    <p class="note" data-i18n="note">Khmer sample text is a demonstration sample pending native-speaker review.</p>
+  </section>
+
+  <!-- Staff view -->
+  <section id="staffView" class="staff" hidden aria-label="Staff view">
+    <h2 data-i18n="staffTitle">Staff view</h2>
+    <p><span data-i18n="sessionState">Session state</span>: <span class="state-pill" id="sessionState">Active</span></p>
+    <p class="muted"><span data-i18n="sessionLabel">Session</span>: <span id="sessionIdLabel"></span></p>
+    <div class="staff-actions">
+      <button type="button" class="btn" id="resumeBtnStaff" data-i18n="resumeBot">Resume bot</button>
+      <button type="button" class="btn btn-secondary" id="refreshBtn" data-i18n="refresh">Refresh</button>
+    </div>
+    <h2 data-i18n="enquiriesTitle">Enquiries</h2>
+    <p class="muted" id="enquiriesEmpty" data-i18n="noEnquiries">No enquiries yet.</p>
+    <div class="table-wrap">
+      <table id="enquiriesTable" hidden>
+        <thead>
+          <tr>
+            <th data-i18n="colTime">Time</th>
+            <th data-i18n="colName">Name</th>
+            <th data-i18n="colPhone">Phone</th>
+            <th data-i18n="colProduct">Product</th>
+            <th data-i18n="colMessage">Message</th>
+            <th data-i18n="colLang">Language</th>
+            <th data-i18n="colStatus">Status</th>
+          </tr>
+        </thead>
+        <tbody id="enquiriesBody"></tbody>
+      </table>
+    </div>
+    <p class="muted" id="staffError" hidden>Demo server not running. Start it with: npm start</p>
+  </section>
+
+</main>
+
+<script>
+(function () {
+  // One session id per page load.
+  var sessionId = "sess-" + Math.random().toString(36).slice(2, 10) + Date.now().toString(36);
+  var paused = false;
+  var lang = "en";
+
+  var messagesEl = document.getElementById("messages");
+  var chatInput = document.getElementById("chatInput");
+  var sendBtn = document.getElementById("sendBtn");
+  var composer = document.getElementById("composer");
+  var errorBox = document.getElementById("errorBox");
+  var handoverBanner = document.getElementById("handoverBanner");
+  var resumeRow = document.getElementById("resumeRow");
+  var sessionStateEl = document.getElementById("sessionState");
+  var sessionIdLabel = document.getElementById("sessionIdLabel");
+  sessionIdLabel.textContent = sessionId;
+
+  // Chrome strings only. Bot replies are never translated here.
+  // Khmer strings are simple samples, pending native-speaker review.
+  var STRINGS = {
+    en: {
+      banner: "DEMONSTRATION. Fictional shop (Sokha Mart, Phnom Penh). Synthetic data only. Not a real business.",
+      shopSub: "Typically replies instantly",
+      placeholder: "Type a message...",
+      send: "Send",
+      staffView: "Staff view",
+      customerView: "Customer view",
+      note: "Khmer sample text is a demonstration sample pending native-speaker review.",
+      handover: "Handed over to a human. The bot is paused. A team member will reply here.",
+      resume: "Resume bot (staff)",
+      staffTitle: "Staff view",
+      sessionState: "Session state",
+      sessionLabel: "Session",
+      resumeBot: "Resume bot",
+      refresh: "Refresh",
+      enquiriesTitle: "Enquiries",
+      noEnquiries: "No enquiries yet.",
+      colTime: "Time",
+      colName: "Name",
+      colPhone: "Phone",
+      colProduct: "Product",
+      colMessage: "Message",
+      colLang: "Language",
+      colStatus: "Status",
+      active: "Active",
+      pausedState: "Paused"
+    },
+    kh: {
+      banner: "ការបង្ហាញ។ ហាងប្រឌិត (Sokha Mart, Phnom Penh)។ ទិន្នន័យសំយោគតែប៉ុណ្ណោះ។ មិនមែនជាអាជីវកម្មពិតទេ។",
+      shopSub: "ឆ្លើយតបយ៉ាងឆាប់រហ័ស",
+      placeholder: "សរសេរសារ...",
+      send: "ផ្ញើ",
+      staffView: "ទិដ្ឋភាពបុគ្គលិក",
+      customerView: "ទិដ្ឋភាពអតិថិជន",
+      note: "អត្ថបទខ្មែរគំរូ គឺជាគំរូបង្ហាញ ដែលកំពុងរង់ចាំការពិនិត្យពីអ្នកនិយាយដើម។",
+      handover: "បានប្រគល់ទៅឱ្យមនុស្ស។ ប៊តត្រូវបានផ្អាក។ សមាជិកក្រុមនឹងឆ្លើយតបនៅទីនេះ។",
+      resume: "បន្តប៊ត (បុគ្គលិក)",
+      staffTitle: "ទិដ្ឋភាពបុគ្គលិក",
+      sessionState: "ស្ថានភាពសម័យ",
+      sessionLabel: "សម័យ",
+      resumeBot: "បន្តប៊ត",
+      refresh: "ផ្ទុកឡើងវិញ",
+      enquiriesTitle: "សំណួរ",
+      noEnquiries: "មិនទាន់មានសំណួរទេ។",
+      colTime: "ពេលវេលា",
+      colName: "ឈ្មោះ",
+      colPhone: "ទូរស័ព្ទ",
+      colProduct: "ផលិតផល",
+      colMessage: "សារ",
+      colLang: "ភាសា",
+      colStatus: "ស្ថានភាព",
+      active: "កំពុងដំណើរការ",
+      pausedState: "បានផ្អាក"
+    }
+  };
+
+  function applyLang() {
+    var s = STRINGS[lang];
+    document.querySelectorAll("[data-i18n]").forEach(function (el) {
+      var key = el.getAttribute("data-i18n");
+      if (s[key]) { el.textContent = s[key]; }
+    });
+    document.querySelectorAll("[data-i18n-placeholder]").forEach(function (el) {
+      var key = el.getAttribute("data-i18n-placeholder");
+      if (s[key]) { el.setAttribute("placeholder", s[key]); }
+    });
+    document.getElementById("langToggle").textContent = lang === "en" ? "KH" : "EN";
+    document.documentElement.lang = lang === "kh" ? "km" : "en";
+    updateSessionState();
+  }
+
+  function updateSessionState() {
+    var s = STRINGS[lang];
+    sessionStateEl.textContent = paused ? s.pausedState : s.active;
+    sessionStateEl.classList.toggle("paused", paused);
+  }
+
+  function setPaused(value) {
+    paused = value;
+    handoverBanner.classList.toggle("show", paused);
+    resumeRow.classList.toggle("show", paused);
+    chatInput.disabled = paused;
+    sendBtn.disabled = paused;
+    document.querySelectorAll("#quickReplies button").forEach(function (b) {
+      b.disabled = paused;
+    });
+    updateSessionState();
+  }
+
+  function langLabel(code) {
+    if (code === "kh") { return "KH"; }
+    if (code === "kh-roman") { return "KH-ROMAN"; }
+    return "EN";
+  }
+
+  function sourceLabel(source) {
+    if (source === "products") { return "Products"; }
+    if (source === "faqs") { return "FAQs"; }
+    if (source === "handover") { return "Handover"; }
+    return "Fallback";
+  }
+
+  function confidenceText(confidence) {
+    if (confidence === null || confidence === undefined || confidence === "") { return "n/a"; }
+    var n = Number(confidence);
+    if (isNaN(n)) { return String(confidence); }
+    if (n <= 1) { return Math.round(n * 100) + "%"; }
+    return Math.round(n) + "%";
+  }
+
+  function addUserMessage(text) {
+    var wrap = document.createElement("div");
+    wrap.className = "msg user";
+    var bubble = document.createElement("div");
+    bubble.className = "bubble";
+    bubble.textContent = text;
+    wrap.appendChild(bubble);
+    messagesEl.appendChild(wrap);
+    messagesEl.scrollTop = messagesEl.scrollHeight;
+  }
+
+  function addBotMessage(data) {
+    var wrap = document.createElement("div");
+    wrap.className = "msg bot";
+    var bubble = document.createElement("div");
+    bubble.className = "bubble";
+    bubble.textContent = data.reply || "";
+    wrap.appendChild(bubble);
+    var meta = document.createElement("div");
+    meta.className = "meta";
+    var badge = document.createElement("span");
+    badge.className = "badge";
+    badge.textContent = langLabel(data.language);
+    var chip = document.createElement("span");
+    chip.className = "chip";
+    chip.textContent = sourceLabel(data.source);
+    var conf = document.createElement("span");
+    conf.className = "conf";
+    conf.textContent = confidenceText(data.confidence);
+    meta.appendChild(badge);
+    meta.appendChild(chip);
+    meta.appendChild(conf);
+    wrap.appendChild(meta);
+    messagesEl.appendChild(wrap);
+    messagesEl.scrollTop = messagesEl.scrollHeight;
+  }
+
+  function showError(show) {
+    errorBox.classList.toggle("show", show);
+  }
+
+  function sendMessage(text) {
+    var trimmed = (text || "").trim();
+    if (!trimmed || paused) { return; }
+    showError(false);
+    addUserMessage(trimmed);
+    chatInput.value = "";
+    console.log("chat send", { sessionId: sessionId, text: trimmed });
+    fetch("/api/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ sessionId: sessionId, text: trimmed })
+    })
+    .then(function (res) { return res.json(); })
+    .then(function (data) {
+      console.log("chat reply", data);
+      addBotMessage(data);
+      if (data && data.handover) {
+        setPaused(true);
+      }
+      if (data && data.enquiry) {
+        console.log("chat enquiry", data.enquiry);
+      }
+    })
+    .catch(function (err) {
+      console.error("chat error", err);
+      showError(true);
+    });
+  }
+
+  composer.addEventListener("submit", function (e) {
+    e.preventDefault();
+    sendMessage(chatInput.value);
+  });
+
+  document.getElementById("quickReplies").addEventListener("click", function (e) {
+    var btn = e.target.closest("button[data-q]");
+    if (!btn) { return; }
+    sendMessage(btn.getAttribute("data-q"));
+  });
+
+  function resumeBot() {
+    console.log("handover resume", { sessionId: sessionId });
+    fetch("/api/handover/resume", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ sessionId: sessionId })
+    })
+    .then(function (res) { return res.json(); })
+    .then(function (data) {
+      console.log("handover resume reply", data);
+      setPaused(false);
+      showError(false);
+      chatInput.focus();
+    })
+    .catch(function (err) {
+      console.error("handover resume error", err);
+      showError(true);
+    });
+  }
+
+  document.getElementById("resumeBtnChat").addEventListener("click", resumeBot);
+  document.getElementById("resumeBtnStaff").addEventListener("click", resumeBot);
+
+  // View toggle: customer chat <-> staff view.
+  var customerView = document.getElementById("customerView");
+  var staffView = document.getElementById("staffView");
+  var viewToggle = document.getElementById("viewToggle");
+  var staffOpen = false;
+
+  function setStaffOpen(open) {
+    staffOpen = open;
+    customerView.hidden = open;
+    staffView.hidden = !open;
+    viewToggle.textContent = open ? STRINGS[lang].customerView : STRINGS[lang].staffView;
+    if (open) { loadEnquiries(); }
+  }
+
+  viewToggle.addEventListener("click", function () {
+    setStaffOpen(!staffOpen);
+  });
+
+  // Language toggle: EN <-> KH, chrome labels only.
+  document.getElementById("langToggle").addEventListener("click", function () {
+    lang = lang === "en" ? "kh" : "en";
+    applyLang();
+  });
+
+  // Staff enquiries.
+  var enquiriesTable = document.getElementById("enquiriesTable");
+  var enquiriesBody = document.getElementById("enquiriesBody");
+  var enquiriesEmpty = document.getElementById("enquiriesEmpty");
+  var staffError = document.getElementById("staffError");
+
+  function loadEnquiries() {
+    staffError.hidden = true;
+    fetch("/api/enquiries")
+      .then(function (res) { return res.json(); })
+      .then(function (data) {
+        console.log("enquiries", data);
+        var list = (data && data.enquiries) || [];
+        enquiriesBody.innerHTML = "";
+        if (!list.length) {
+          enquiriesTable.hidden = true;
+          enquiriesEmpty.hidden = false;
+          return;
+        }
+        enquiriesEmpty.hidden = true;
+        enquiriesTable.hidden = false;
+        list.forEach(function (row) {
+          var tr = document.createElement("tr");
+          var cells = [
+            row.timestamp || "",
+            row.name || "",
+            row.phone || "",
+            row.product || "",
+            row.message || "",
+            row.language || "",
+            row.status || ""
+          ];
+          cells.forEach(function (value) {
+            var td = document.createElement("td");
+            td.textContent = value;
+            tr.appendChild(td);
+          });
+          enquiriesBody.appendChild(tr);
+        });
+      })
+      .catch(function (err) {
+        console.error("enquiries error", err);
+        staffError.hidden = false;
+      });
+  }
+
+  document.getElementById("refreshBtn").addEventListener("click", loadEnquiries);
+
+  applyLang();
+})();
+</script>
+</body>
+</html>

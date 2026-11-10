@@ -1,0 +1,12 @@
+# SAMPLE Khmer text, pending native-speaker review, do not present as verified Khmer
+id,question_en,answer_en,answer_kh,keywords
+F01,What are your opening hours?,"We are open Monday to Saturday, 8:00 AM to 6:00 PM.",យើងបើកថ្ងៃច័ន្ទដល់ថ្ងៃសៅរ៍ ម៉ោង ៨ ព្រឹកដល់ ៦ ល្ងាច។,"hours,open,opening,closing"
+F02,Do you deliver in Phnom Penh?,"Yes, we deliver in Phnom Penh for $1.50, usually within one day.",បាទ យើងដឹកជញ្ជូននៅភ្នំពេញ។,"delivery,Phnom Penh,deliver"
+F03,Do you deliver outside Phnom Penh?,"We deliver outside Phnom Penh for $3.00, usually within 2 to 3 days.",យើងដឹកជញ្ជូនក្រៅភ្នំពេញ។,"delivery,outside,province"
+F04,What payment methods do you accept?,"We accept cash, ABA, and Wing.",យើងទទួលសាច់ប្រាក់ ABA និង Wing។,"payment,cash,ABA,Wing,pay"
+F05,How do I order?,"Tell us the product name and quantity, and we will confirm your order.",ប្រាប់យើងពីឈ្មោះផលិតផល និងចំនួន។,"order,how to order,buy"
+F06,What is your return policy?,"You can return an unopened product within 3 days for a refund or exchange.",អ្នកអាចប្តូរផលិតផលក្នុង ៣ ថ្ងៃ។,"return,refund,exchange"
+F07,Do you offer wholesale prices?,"Yes, we offer wholesale prices for orders of 20 items or more. Please contact us for a quote.",បាទ យើងមានតម្លៃបោះដុំ។,"wholesale,bulk,large order"
+F08,Do you ship abroad?,"No, we do not ship abroad. We deliver in Phnom Penh only for now.",ទេ យើងមិនដឹកជញ្ជូនទៅក្រៅប្រទេសទេ។,"ship abroad,international,overseas"
+F09,Are your products halal?,"Please check the ingredients on each product label. Contact us if you need ingredient details.",សូមពិនិត្យគ្រឿងផ្សំនៅលើស្លាក។,"halal,ingredients,pork,vegetarian"
+F10,How can I contact a human?,"You can ask here for a team member, and we will connect you with a human.",អ្នកអាចសុំជួបក្រុមការងារ។,"human,contact,team,help"

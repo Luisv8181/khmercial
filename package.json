@@ -1,0 +1,1 @@
+{"name":"khmercial-demo","private":true,"scripts":{"start":"node server.mjs","test":"node tests/run.js"},"type":"module"}

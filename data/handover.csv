@@ -1,0 +1,7 @@
+id,rule,action,reply_en,reply_kh
+H01,Customer is angry or upset,pause,I understand this is frustrating. I will pause here and connect you with a team member.,ខ្ញុំយល់។ ខ្ញុំនឹងផ្អាក ហើយភ្ជាប់អ្នកជាមួយក្រុមការងារ។
+H02,Customer asks for a refund or makes a complaint,pause,I will pause here and pass your refund request to the team.,ខ្ញុំនឹងផ្អាក ហើយបញ្ជូនសំណើរបស់អ្នកទៅក្រុមការងារ។
+H03,Customer asks about a product not in the sheet,pause,We do not have that product in our list. I will pass this to the team to check.,ផលិតផលនេះមិនមានក្នុងបញ្ជីរបស់យើងទេ។ ខ្ញុំនឹងបញ្ជូនទៅក្រុមការងារ។
+H04,Customer gives a phone number or asks to be called,pause,Thank you. I will pause here and pass your number to the team to call you.,អរគុណ។ ខ្ញុំនឹងផ្អាក ហើយបញ្ជូនលេខរបស់អ្នកទៅក្រុមការងារ។
+H05,Customer asks for a discount or negotiation,pause,I will pause here and ask the team about a discount for you.,ខ្ញុំនឹងផ្អាក ហើយសួរពីក្រុមការងារអំពីការបញ្ចុះតម្លៃ។
+H06,Bot confidence is low or bot does not understand twice,pause,I am not sure I understood. I will pass this to the team.,ខ្ញុំមិនប្រាកដថាខ្ញុំយល់ទេ។ ខ្ញុំនឹងបញ្ជូនទៅក្រុមការងារ។
